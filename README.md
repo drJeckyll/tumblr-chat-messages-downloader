@@ -3,7 +3,7 @@ Script to download tumblr chat messages
 ```
 Usage: ./tumblr.php username password blog [conversation] [file]
 ```
-First run script just with username, password and blog name without .tumblr.com in it.
+First run script just with username, password and blog name **without .tumblr.com** in it.
 
 You will get list of all available conversations
 
