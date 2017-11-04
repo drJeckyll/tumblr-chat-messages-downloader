@@ -54,9 +54,16 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
 $r = curl_exec($ch);
 
 preg_match('#polling_token&quot;:&quot;(.*?)&quot;,&quot;#', $r, $matches);
-$token = $matches[1];
+$token = @$matches[1];
 preg_match('#mention_key&quot;:&quot;(.*?)&quot;,&quot;#', $r, $matches);
-$mention = $matches[1];
+$mention = @$matches[1];
+
+if (($token == "") || ($mention == ""))
+{
+	echo "done.\n\nInvlid username or password!\n\n";
+
+	exit;
+}
 
 //$q = "https://www.tumblr.com/services/poll?_=" . time() . "000&mention_keys=" . $mention . "&token=" . $token . "&unread_messages=true";
 //curl_setopt($ch, CURLOPT_URL, $q);
