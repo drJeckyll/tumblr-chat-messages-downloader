@@ -8,10 +8,12 @@ First run script just with username, password and blog name without .tumblr.com 
 You will get list of all available conversations
 
 Conversations: 
+```
 111111111 username <=> chatuser1
 222222222 username <=> chatuser2
 333333333 username <=> chatuser3
 ...
+```
 
 Then run script again with conversation you want to download: 
 Usage: ./tumblr.php username password blog 111111111
