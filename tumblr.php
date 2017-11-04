@@ -65,10 +65,6 @@ if (($token == "") || ($mention == ""))
 	exit;
 }
 
-//$q = "https://www.tumblr.com/services/poll?_=" . time() . "000&mention_keys=" . $mention . "&token=" . $token . "&unread_messages=true";
-//curl_setopt($ch, CURLOPT_URL, $q);
-//$r = curl_exec($ch);
-
 if ($conversation == "")
 {
 	echo "conversations, ";
