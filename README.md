@@ -27,4 +27,4 @@ Usage: ./tumblr.php username password blog 111111111 file.txt
 ```
 WARNING: file will be overwriten without warning.
 
-Script is not tested very well so it may have bugs, ot not work at all. Theres is no check is password is correct so it will fail misserable in that is the case.
+Script is not tested very well so it may have bugs, ot not work at all. ~~Theres is no check is password is correct so it will fail misserable in that is the case.~~
