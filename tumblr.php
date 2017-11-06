@@ -144,6 +144,13 @@ while ($next != "")
 			foreach ($i->images as $img) $images[] = $img->original_size->url;
 		
 			$messages[$i->ts] = date("d/m/Y, H:i:s", $i->ts / 1000) . " " . $user . ": " . join(" , ", $images);
+		} else
+		if ($i->type == "POSTREF")
+		{
+			$messages[$i->ts] = date("d/m/Y, H:i:s", $i->ts / 1000) . " " . $user . ": " . $i->post->post_url;
+		} else {
+			echo "\nUNKNOWN\n";
+			print_r($i);
 		}
 	}
 	
