@@ -118,8 +118,15 @@ while ($next != "")
 		'X-Requested-With: XMLHttpRequest',
 	));
 	curl_setopt($ch, CURLOPT_POST, false);
-	$r = curl_exec($ch);
-	$r = json_decode($r);
+	$y = 5;
+	while ($y > 0)
+	{
+		$r = curl_exec($ch);
+		$r = json_decode($r);
+		if (is_object($r)) break;
+		$y--;
+		echo "retry, ";
+	}
 	$next = @$r->response->messages->_links->next->href;
 	$r = $r->response->messages->data;
 
