@@ -1,27 +1,51 @@
 #!/usr/bin/php
 <?php
 
-if ($argc < 4)
+function usage($name)
 {
-	echo "\nUsage: " . $argv[0] . " username password blog [conversation] [file]\n\n";
+	echo "\nUsage: " . $name . " -u username -p password -b blog [-c conversation] [-f filename] [-s] [-d yyyymmdd]\n\n";
+	echo "\tFirst run script only with username, password and blog to get list of conversations.\n";
+	echo "\tThen run script again specifying conversation you want to download.\n\n";
+	echo "\t-u, --username (required)\n\t\ttumblr username or E-mail\n\n";
+	echo "\t-p, --password (required)\n\t\ttumblr password\n\n";
+	echo "\t-b, --blog (required)\n\t\ttumblr blog without .tumblr.com (required)\n\n";
+	echo "\t-c, --conversation (optional)\n\t\tconversation id from the list\n\n";
+	echo "\t-f, --file filename (optional)\n\t\toutput file name\n\n";
+	echo "\t-s, --split (optional) (require -f)\n\t\tput output in separete files for each day: filename-yyyymmdd.ext\n\n";
+	echo "\t-d, --date  yyyymmdd (optional)\n\t\toutput only log for specified date\n\n";
+	echo "\n";
+
 	exit;
 }
-if ($argc == 4)
-{
-	$username = $argv[1];
-	$password = $argv[2];
-	$blog = $argv[3] . ".tumblr.com";
-	$conversation = "";
-} else {
-	$username = $argv[1];
-	$password = $argv[2];
-	$blog = $argv[3] . ".tumblr.com";
-	$conversation = $argv[4];
-	if ($argc == 6)
-	{
-		$file = $argv[5];
-	} else $file = "";
+
+$username = "";
+$password = "";
+$blog = "";
+$conversation = "";
+$file = "";
+$split = 0;
+$date = "";
+$a = getopt("u:p:b:c:f:sd:", array("username:", "password:", "blog:", "conversation:", "file:", "split", "date:"));
+if (!isset($a['u']) && !isset($a['username'])) usage($argv[0]); else {
+	if (isset($a['u'])) $username = $a['u'];
+	if (isset($a['username'])) $username = $a['username'];
 }
+if (!isset($a['p']) && !isset($a['password'])) usage($argv[0]); else {
+	if (isset($a['p'])) $password = $a['p'];
+	if (isset($a['password'])) $password = $a['password'];
+}
+if (!isset($a['b']) && !isset($a['blog'])) usage($argv[0]); else {
+	if (isset($a['b'])) $blog = $a['b'] . ".tumblr.com";
+	if (isset($a['blog'])) $blog = $a['blog'] . ".tumblr.com";
+}
+if (isset($a['c'])) $conversation = $a['c'];
+if (isset($a['conversation'])) $conversation = $a['conversation'];
+if (isset($a['f'])) $file = $a['f'];
+if (isset($a['file'])) $file = $a['file'];
+if (isset($a['s'])) $split = 1;
+if (isset($a['split'])) $split = 1;
+if (isset($a['d'])) $date = $a['d'];
+if (isset($a['date'])) $date = $a['date'];
 
 echo "\nFetch: login, ";
 $ch = curl_init();
@@ -130,6 +154,7 @@ while ($next != "")
 	$next = @$r->response->messages->_links->next->href;
 	$r = $r->response->messages->data;
 
+	$dfound = 0;
 	if (count($r))
 	foreach ($r as $i)
 	{
