@@ -3,16 +3,16 @@
 
 function usage($name)
 {
-	echo "\nUsage: " . $name . " -u username -p password -b blog [-c conversation] [-f filename] [-s] [-d yyyymmdd]\n\n";
+	echo "\nUsage: " . $name . " -u username -p password -b blog [-c conversation] [-f filename] [-s] [-d YYYYMMDD]\n\n";
 	echo "\tFirst run script only with username, password and blog to get list of conversations.\n";
 	echo "\tThen run script again specifying conversation you want to download.\n\n";
 	echo "\t-u, --username (required)\n\t\ttumblr username or E-mail\n\n";
 	echo "\t-p, --password (required)\n\t\ttumblr password\n\n";
 	echo "\t-b, --blog (required)\n\t\ttumblr blog without .tumblr.com (required)\n\n";
-	echo "\t-c, --conversation (optional)\n\t\tconversation id from the list\n\n";
+	echo "\t-c, --conversation (optional|required)\n\t\tconversation id from the list\n\n";
+	echo "\t-d, --date YYYYMMDD (optional)\n\t\toutput only log for specified date\n\n";
 	echo "\t-f, --file filename (optional)\n\t\toutput file name\n\n";
-	echo "\t-s, --split (optional) (require -f)\n\t\tput output in separete files for each day: filename-yyyymmdd.ext\n\n";
-	echo "\t-d, --date  yyyymmdd (optional)\n\t\toutput only log for specified date\n\n";
+	echo "\t-s, --split (optional) (require -f)\n\t\tput output in separete files for each day: filename-YYYYMMDD.ext\n\n";
 	echo "\n";
 
 	exit;
@@ -46,6 +46,8 @@ if (isset($a['s'])) $split = 1;
 if (isset($a['split'])) $split = 1;
 if (isset($a['d'])) $date = $a['d'];
 if (isset($a['date'])) $date = $a['date'];
+if (isset($a['d']) || isset($a['date']))
+	if (strlen($date) != 8) usage($agrv[0]);
 
 echo "\nFetch: login, ";
 $ch = curl_init();
@@ -154,7 +156,6 @@ while ($next != "")
 	$next = @$r->response->messages->_links->next->href;
 	$r = $r->response->messages->data;
 
-	$dfound = 0;
 	if (count($r))
 	foreach ($r as $i)
 	{
@@ -165,38 +166,71 @@ while ($next != "")
 			echo date("d/m/Y, H:i:s", $t / 1000) . ", ";
 		}
 
-		$user = @array_shift(explode(".", $i->participant));
+		if ($date != "")
+		{
+			$d = date("Ymd", $i->ts / 1000);
+			if ((int)$d < (int)$date) break 2;
+		} else $d = "";
 
-		if ($i->type == "TEXT")
-			$messages[$i->ts] = date("d/m/Y, H:i:s", $i->ts / 1000) . " " . $user . ": " . $i->message;
-		else
-		if ($i->type == "IMAGE")
+		if (($d == "") || ($d == $date))
 		{
-			$images = array();
-			foreach ($i->images as $img) $images[] = $img->original_size->url;
-		
-			$messages[$i->ts] = date("d/m/Y, H:i:s", $i->ts / 1000) . " " . $user . ": " . join(" , ", $images);
-		} else
-		if ($i->type == "POSTREF")
-		{
-			$messages[$i->ts] = date("d/m/Y, H:i:s", $i->ts / 1000) . " " . $user . ": " . $i->post->post_url;
-		} else {
-			echo "\nUNKNOWN\n";
-			print_r($i);
+			$user = @array_shift(explode(".", $i->participant));
+
+			if ($i->type == "TEXT")
+			{
+				$messages[$i->ts] = date("d/m/Y, H:i:s", $i->ts / 1000) . " " . $user . ": " . $i->message;
+			} else
+			if ($i->type == "IMAGE")
+			{
+				$images = array();
+				foreach ($i->images as $img) $images[] = $img->original_size->url;
+
+				$messages[$i->ts] = date("d/m/Y, H:i:s", $i->ts / 1000) . " " . $user . ": " . join(" , ", $images);
+			} else
+			if ($i->type == "POSTREF")
+			{
+				$messages[$i->ts] = date("d/m/Y, H:i:s", $i->ts / 1000) . " " . $user . ": " . $i->post->post_url;
+			} else {
+				echo "\nUNKNOWN\n";
+				print_r($i);
+			}
 		}
 	}
 	
 	$q = "https://www.tumblr.com" . $next;
 }
 
+curl_close($ch);
+
 echo "done.\n\n";
 
 ksort($messages);
-$messages = join("\n", array_values($messages));
-if ($file != "")
-{
-	file_put_contents($file, $messages . "\n");
-} else
-	echo $messages . "\n\n";
 
-curl_close($ch);
+if ($file == "")
+{
+	$messages = join("\n", array_values($messages));
+	echo $messages . "\n\n";
+} else {
+	if ($split == 0)
+	{
+		$messages = join("\n", array_values($messages));
+		file_put_contents($file, $messages . "\n");
+	} else {
+		$a = explode(".", $file);
+		if (count($a) > 1) $e = "." . array_pop($a); else $e = "";
+
+		$m = array();
+		if (count($messages))
+		{
+			foreach ($messages as $i => $s) $m[date("Ymd", $i / 1000)][] = $s;
+
+			foreach ($m as $d => $s)
+			{
+				$messages = join("\n", array_values($s));
+				file_put_contents(join($a) . "-" . $d . $e, $messages . "\n");
+			}
+		}
+	}
+}
+
+?>
