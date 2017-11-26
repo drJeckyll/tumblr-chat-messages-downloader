@@ -15,7 +15,7 @@ You will get a list of all available conversations, which will appear as follows
 ...
 ```
 
-Once you have acquired this list, run the script again, this time using the number of the conversation you want to download as the fourth argument: 
+Once you have acquired this list, run the script again, this time using the number of the conversation you want to download: 
 ```
 Usage: ./tumblr.php -u username -p password -b blog -c 111111111
 ```
