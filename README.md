@@ -4,7 +4,7 @@ A script to download tumblr chat messages
 ```
 Usage: ./tumblr.php -u username -p password -b blog [-c conversation] [-f filename] [-s] [-d YYYYMMDD]
 ```
-First, run the script just with your Tumblr username and password, and the URL for the specific blog **without** the ".tumblr.com" portion. (The blog must be associated with your Tumblr account.)
+First, run the script just with your Tumblr username, password and the URL for the specific blog **without** the ".tumblr.com" portion. (The blog must be associated with your Tumblr account.)
 
 You will get a list of all available conversations, which will appear as follows:
 
@@ -31,9 +31,9 @@ If **-d** option is supplied then only chat messages from specified date will be
 
 WARNING: If the filename you have chosen already contains content, its original contents will be *overwritten without warning*.
 
-This script has not yet been tested very well, so it may have bugs, ot not work at all. ~~For instance, it handles cases where the blog password is incorrect very badly, as there are no relevant checks.~~
+This script has not yet been tested very well, so it may have bugs, or not work at all. ~~For instance, it handles cases where the blog password is incorrect very badly, as there are no relevant checks.~~
 
-Full help message (displayed if no or invlid options are suuplied):
+Full help message (displayed if no or invlid options are supplied):
 ````
 Usage: ./tumblr.php -u username -p password -b blog [-c conversation] [-f filename] [-s] [-d YYYYMMDD]
 
