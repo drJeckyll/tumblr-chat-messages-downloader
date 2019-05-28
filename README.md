@@ -1,3 +1,8 @@
+# THIS CODE IS OBSOLETE AND WILL NOT BE UPDATED ANYMORE
+Please use new repo here: https://git.jeckyll.net/published/personal/tumblr-chat-messages-downloader
+
+
+
 # tumblr-chat-messages-downloader
 
 A script to download tumblr chat messages
